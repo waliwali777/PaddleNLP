@@ -16,18 +16,22 @@
 
 set -e
 
-export log_path=/workspace/case_logs
-export root_path=/workspace/PaddleNLP
+export log_path=/paddle/xuexixi/PaddleNLPcase_logs
+export root_path=/paddle/xuexixi/PaddleNLP
 
-export gpt_case_path=$root_path/slm/model_zoo/gpt-3
-export gpt_data_path=/fleetx_data
+export gpt_case_path=$root_path/legacy/model_zoo/gpt-3
+export gpt_data_path=/paddle/xuexixi/PaddleNLP/tmp/fleetx_data
 
 export llm_gpt_case_path=$root_path/llm
-export llm_gpt_data_path=/llm_gpt_data
+export llm_gpt_data_path=/paddle/xuexixi/PaddleNLP/tmp/llm_gpt_data
 
 unset CUDA_VISIBLE_DEVICES
 
 function gpt_case_list_dygraph(){
+    cd   /paddle/xuexixi/PaddleNLP/slm/model_zoo/gpt-3/
+    echo "xuexixi------"
+    echo $PWD
+    echo "xxx ----------------------- end_time: $(date +%s) -----------------------"
     gpt_preprocess_data
     gpt_345M_single
     gpt_1.3B_dp
@@ -39,9 +43,11 @@ function gpt_case_list_dygraph(){
     gpt_175B_DP1_MP8_PP1
     gpt_175B_DP1_MP8_PP1_sp
     gpt_175B_DP1_MP1_PP8
+    echo "xxx ----------------------- end_time: $(date +%s) -----------------------"
     gpt_generation_345M_single
     gpt_generation_345M_hybrid
     gpt_345M_mp8_qat
+    echo "xxx ----------------------- end_time: $(date +%s) -----------------------"
     # gpt_export_345M_mp1
     # gpt_export_345M_mp2
     # gpt_export_qat_345M
@@ -59,12 +65,14 @@ function llm_gpt_case_list_dygraph() {
 ############ case start ############
 function gpt_preprocess_data() {
     echo "=========== $FUNCNAME run begin ==========="
-    rm -rf log
-    python ppfleetx/data/data_tools/gpt/raw_trans_to_json.py  \
+    
+    echo $PWD
+    echo $ls
+    python ./ppfleetx/data/data_tools/gpt/raw_trans_to_json.py  \
         --input_path ./dataset/wikitext_103_en \
         --output_path ./dataset/wikitext_103_en/wikitext_103_en \
         >>${log_path}/$FUNCNAME 2>&1
-    python ppfleetx/data/data_tools/gpt/preprocess_data.py \
+    python ./ppfleetx/data/data_tools/gpt/preprocess_data.py \
         --model_name gpt2 \
         --tokenizer_name GPTTokenizer \
         --data_format JSON \
@@ -80,9 +88,9 @@ function gpt_preprocess_data() {
 
 function gpt_345M_single() {
     echo "=========== $FUNCNAME run begin ==========="
-    rm -rf log
+    
     python tools/train.py \
-        -c ppfleetx/configs/nlp/gpt/pretrain_gpt_345M_single_card.yaml \
+        -c ./ppfleetx/configs/nlp/gpt/pretrain_gpt_345M_single_card.yaml \
         -o Model.num_layers=4 -o Model.num_attention_heads=4 \
         -o Engine.max_steps=10 -o Engine.eval_freq=10 \
         -o Engine.eval_iters=5 -o Engine.save_load.save_steps=10 \
@@ -93,9 +101,9 @@ function gpt_345M_single() {
 
 function gpt_1.3B_dp() {
     echo "=========== $FUNCNAME run begin ==========="
-    rm -rf log
+    
     python -m paddle.distributed.launch --devices "0,1,2,3,4,5,6,7" tools/train.py\
-        -c ppfleetx/configs/nlp/gpt/pretrain_gpt_1.3B_dp8.yaml \
+        -c ./ppfleetx/configs/nlp/gpt/pretrain_gpt_1.3B_dp8.yaml \
         -o Model.num_layers=4 -o Model.num_attention_heads=4 \
         -o Engine.max_steps=10 -o Engine.eval_freq=10 \
         -o Engine.eval_iters=5 -o Engine.save_load.save_steps=10 \
@@ -106,9 +114,9 @@ function gpt_1.3B_dp() {
 
 function gpt_6.7B_stage2_dp2_sharding4() {
     echo "=========== $FUNCNAME run begin ==========="
-    rm -rf log
+    
     python -m paddle.distributed.launch --devices "0,1,2,3,4,5,6,7" \
-        tools/train.py -c ppfleetx/configs/nlp/gpt/pretrain_gpt_6.7B_sharding16.yaml \
+        tools/train.py -c ./ppfleetx/configs/nlp/gpt/pretrain_gpt_6.7B_sharding16.yaml \
         -o Model.num_layers=4 -o Model.num_attention_heads=4 \
         -o Engine.max_steps=10 -o Engine.eval_freq=10 \
         -o Engine.eval_iters=5 -o Engine.save_load.save_steps=10 \
@@ -122,9 +130,9 @@ function gpt_6.7B_stage2_dp2_sharding4() {
 
 function gpt_6.7B_stage3_dp2_sharding4() {
     echo "=========== $FUNCNAME run begin ==========="
-    rm -rf log
+    
     python -m paddle.distributed.launch --devices "0,1,2,3,4,5,6,7" \
-        tools/train.py -c ppfleetx/configs/nlp/gpt/pretrain_gpt_6.7B_sharding16.yaml \
+        tools/train.py -c ./ppfleetx/configs/nlp/gpt/pretrain_gpt_6.7B_sharding16.yaml \
         -o Model.num_layers=4 -o Model.num_attention_heads=4 \
         -o Engine.max_steps=10 -o Engine.eval_freq=10 \
         -o Engine.eval_iters=5 -o Engine.save_load.save_steps=10 \
@@ -138,9 +146,9 @@ function gpt_6.7B_stage3_dp2_sharding4() {
 
 function gpt_6.7B_stage2_sharding8() {
     echo "=========== $FUNCNAME run begin ==========="
-    rm -rf log
+    
     python -m paddle.distributed.launch --devices "0,1,2,3,4,5,6,7" \
-        tools/train.py -c ppfleetx/configs/nlp/gpt/pretrain_gpt_6.7B_sharding16.yaml \
+        tools/train.py -c ./ppfleetx/configs/nlp/gpt/pretrain_gpt_6.7B_sharding16.yaml \
         -o Model.num_layers=4 -o Model.num_attention_heads=4 \
         -o Engine.max_steps=20 -o Engine.eval_freq=20 \
         -o Engine.eval_iters=5 -o Engine.save_load.save_steps=10 \
@@ -154,9 +162,9 @@ function gpt_6.7B_stage2_sharding8() {
 
 function gpt_175B_DP1_MP4_PP2() {
     echo "=========== $FUNCNAME run begin ==========="
-    rm -rf log
+    
     python -m paddle.distributed.launch --devices "0,1,2,3,4,5,6,7" tools/train.py\
-        -c ppfleetx/configs/nlp/gpt/pretrain_gpt_175B_mp8_pp16.yaml \
+        -c ./ppfleetx/configs/nlp/gpt/pretrain_gpt_175B_mp8_pp16.yaml \
         -o Model.hidden_size=1024 -o Model.num_layers=4 -o Model.num_attention_heads=4 \
         -o Engine.max_steps=10 -o Engine.eval_freq=10 \
         -o Engine.eval_iters=5 -o Engine.save_load.save_steps=10 \
@@ -170,9 +178,9 @@ function gpt_175B_DP1_MP4_PP2() {
 
 function gpt_175B_DP1_MP4_PP2_sp() {
     echo "=========== $FUNCNAME run begin ==========="
-    rm -rf log
+    
     python -m paddle.distributed.launch --devices "0,1,2,3,4,5,6,7" tools/train.py\
-        -c ppfleetx/configs/nlp/gpt/pretrain_gpt_175B_mp8_pp16.yaml \
+        -c ./ppfleetx/configs/nlp/gpt/pretrain_gpt_175B_mp8_pp16.yaml \
         -o Model.hidden_size=1024 -o Model.num_layers=4 -o Model.num_attention_heads=4 \
         -o Engine.max_steps=10 -o Engine.eval_freq=10 \
         -o Engine.eval_iters=5 -o Engine.save_load.save_steps=10 \
@@ -185,9 +193,9 @@ function gpt_175B_DP1_MP4_PP2_sp() {
 
 function gpt_175B_DP1_MP8_PP1() {
     echo "=========== $FUNCNAME run begin ==========="
-    rm -rf log
+    
     python -m paddle.distributed.launch --devices "0,1,2,3,4,5,6,7" tools/train.py\
-        -c ppfleetx/configs/nlp/gpt/pretrain_gpt_175B_mp8_pp16.yaml \
+        -c ./ppfleetx/configs/nlp/gpt/pretrain_gpt_175B_mp8_pp16.yaml \
         -o Model.hidden_size=1024 -o Model.num_layers=16 -o Model.num_attention_heads=16 \
         -o Engine.max_steps=10 -o Engine.eval_freq=10 \
         -o Engine.eval_iters=5 -o Engine.save_load.save_steps=10 \
@@ -201,9 +209,9 @@ function gpt_175B_DP1_MP8_PP1() {
 
 function gpt_175B_DP1_MP8_PP1_sp() {
     echo "=========== $FUNCNAME run begin ==========="
-    rm -rf log
+    
     python -m paddle.distributed.launch --devices "0,1,2,3,4,5,6,7" tools/train.py\
-        -c ppfleetx/configs/nlp/gpt/pretrain_gpt_175B_mp8_pp16.yaml \
+        -c ./ppfleetx/configs/nlp/gpt/pretrain_gpt_175B_mp8_pp16.yaml \
         -o Model.hidden_size=1024 -o Model.num_layers=16 -o Model.num_attention_heads=16 \
         -o Engine.max_steps=10 -o Engine.eval_freq=10 \
         -o Engine.eval_iters=5 -o Engine.save_load.save_steps=10 \
@@ -216,9 +224,9 @@ function gpt_175B_DP1_MP8_PP1_sp() {
 
 function gpt_175B_DP1_MP1_PP8() {
     echo "=========== $FUNCNAME run begin ==========="
-    rm -rf log
+    
     python -m paddle.distributed.launch --devices "0,1,2,3,4,5,6,7" tools/train.py\
-        -c ppfleetx/configs/nlp/gpt/pretrain_gpt_175B_mp8_pp16.yaml \
+        -c ./ppfleetx/configs/nlp/gpt/pretrain_gpt_175B_mp8_pp16.yaml \
         -o Model.hidden_size=1024 -o Model.num_layers=32 -o Model.num_attention_heads=16 \
         -o Engine.max_steps=10 -o Engine.eval_freq=10 \
         -o Engine.eval_iters=5 -o Engine.save_load.save_steps=10 \
@@ -234,9 +242,9 @@ function gpt_175B_DP1_MP1_PP8() {
 
 function gpt_345M_mp8_qat() {
     echo "=========== $FUNCNAME run begin ==========="
-    rm -rf log
+    
     python -m paddle.distributed.launch --devices "0,1,2,3,4,5,6,7" tools/train.py\
-        -c ppfleetx/configs/nlp/gpt/qat_gpt_345M_mp8.yaml \
+        -c ./ppfleetx/configs/nlp/gpt/qat_gpt_345M_mp8.yaml \
         -o Model.num_layers=4 -o Model.num_attention_heads=8 \
         -o Engine.max_steps=10 -o Engine.eval_freq=10 \
         -o Engine.eval_iters=5 -o Engine.save_load.save_steps=10 \
@@ -247,9 +255,9 @@ function gpt_345M_mp8_qat() {
 
 function gpt_generation_345M_single() {
     echo "=========== $FUNCNAME run begin ==========="
-    rm -rf log
+    echo $PWD
     python tasks/gpt/generation.py \
-        -c ppfleetx/configs/nlp/gpt/generation_gpt_345M_single_card.yaml \
+        -c ./ppfleetx/configs/nlp/gpt/generation_gpt_345M_single_card.yaml \
         -o Engine.save_load.ckpt_dir=./ckpt/PaddleFleetX_GPT_345M_220826/ \
         >>${log_path}/$FUNCNAME 2>&1
     check_result $FUNCNAME
@@ -258,9 +266,9 @@ function gpt_generation_345M_single() {
 
 function gpt_generation_345M_hybrid() {
     echo "=========== $FUNCNAME run begin ==========="
-    rm -rf log
+    
     python -m paddle.distributed.launch --devices "0" tasks/gpt/generation.py \
-        -c ppfleetx/configs/nlp/gpt/generation_gpt_345M_dp8.yaml \
+        -c ./ppfleetx/configs/nlp/gpt/generation_gpt_345M_dp8.yaml \
         -o Engine.save_load.ckpt_dir=./ckpt/PaddleFleetX_GPT_345M_220826/ \
         >>${log_path}/$FUNCNAME 2>&1
     check_result $FUNCNAME
@@ -277,7 +285,7 @@ function gpt_export_345M_mp1() {
     export CUDA_VISIBLE_DEVICES=1
     python -m paddle.distributed.launch --log_dir $log_dir --devices "1" \
         ./tools/auto_export.py \
-        -c ./ppfleetx/configs/nlp/gpt/auto/generation_gpt_345M_single_card.yaml \
+        -c ././ppfleetx/configs/nlp/gpt/auto/generation_gpt_345M_single_card.yaml \
         -o Engine.save_load.ckpt_dir=./pretrained/inference_model \
         >>${log_path}/$FUNCNAME 2>&1
     python -m paddle.distributed.launch --devices "1" \
@@ -298,7 +306,7 @@ function gpt_export_345M_mp2() {
     export CUDA_VISIBLE_DEVICES=0,1
     python -m paddle.distributed.launch --devices "0,1" \
         ./tools/auto_export.py \
-        -c ./ppfleetx/configs/nlp/gpt/auto/generation_gpt_345M_mp2.yaml \
+        -c ././ppfleetx/configs/nlp/gpt/auto/generation_gpt_345M_mp2.yaml \
         -o Generation.use_topp_sampling=False \
         -o Engine.save_load.ckpt_dir=./pretrained/inference_model \
         >>${log_path}/$FUNCNAME 2>&1
@@ -317,7 +325,7 @@ function gpt_export_qat_345M() {
     rm -rf output
 
     python ./tools/export.py \
-        -c ./ppfleetx/configs/nlp/gpt/generation_qat_gpt_345M_single_card.yaml \
+        -c ././ppfleetx/configs/nlp/gpt/generation_qat_gpt_345M_single_card.yaml \
         -o Model.hidden_dropout_prob=0.0 \
         -o Model.attention_probs_dropout_prob=0.0 \
         -o Engine.save_load.ckpt_dir='./GPT_345M_QAT_wo_analysis/' \
@@ -331,14 +339,14 @@ function gpt_export_qat_345M() {
 
 function gpt_inference_345M_single() {
     echo "=========== $FUNCNAME run begin ==========="
-    rm -rf log
+    
     rm -rf output
     python tools/export.py \
-        -c ppfleetx/configs/nlp/gpt/inference_gpt_345M_single_card.yaml \
+        -c ./ppfleetx/configs/nlp/gpt/inference_gpt_345M_single_card.yaml \
         -o Engine.save_load.ckpt_dir=./ckpt/PaddleFleetX_GPT_345M_220826/ \
         >>${log_path}/$FUNCNAME 2>&1
     python tasks/gpt/inference.py \
-        -c ppfleetx/configs/nlp/gpt/inference_gpt_345M_single_card.yaml \
+        -c ./ppfleetx/configs/nlp/gpt/inference_gpt_345M_single_card.yaml \
         >>${log_path}/$FUNCNAME 2>&1
     check_result $FUNCNAME
     echo "=========== $FUNCNAME run  end ==========="
@@ -346,15 +354,15 @@ function gpt_inference_345M_single() {
 
 function gpt_inference_345M_dp8() {
     echo "=========== $FUNCNAME run begin ==========="
-    rm -rf log
+    
     rm -rf output
     python -m paddle.distributed.launch --devices "0" tools/export.py \
-        -c ppfleetx/configs/nlp/gpt/inference_gpt_345M_single_card.yaml \
+        -c ./ppfleetx/configs/nlp/gpt/inference_gpt_345M_single_card.yaml \
         -o Engine.save_load.ckpt_dir=./ckpt/PaddleFleetX_GPT_345M_220826/ \
         >>${log_path}/$FUNCNAME 2>&1
     python -m paddle.distributed.launch --devices "0" \
         tasks/gpt/inference.py \
-        -c ppfleetx/configs/nlp/gpt/inference_gpt_345M_single_card.yaml \
+        -c ./ppfleetx/configs/nlp/gpt/inference_gpt_345M_single_card.yaml \
         >>${log_path}/$FUNCNAME 2>&1
     check_result $FUNCNAME
     echo "=========== $FUNCNAME run  end ==========="
@@ -362,9 +370,9 @@ function gpt_inference_345M_dp8() {
 
 function gpt_345M_single_finetune() {
     echo "=========== $FUNCNAME run begin ==========="
-    rm -rf log
+    
     python ./tools/train.py \
-        -c ./ppfleetx/configs/nlp/gpt/finetune_gpt_345M_single_card_glue.yaml \
+        -c ././ppfleetx/configs/nlp/gpt/finetune_gpt_345M_single_card_glue.yaml \
         -o Engine.num_train_epochs=1 \
         -o Data.Train.dataset.name=WNLI \
         -o Data.Train.dataset.root=./dataset/WNLI/ \
@@ -379,9 +387,9 @@ function gpt_345M_single_finetune() {
 
 function gpt_eval_WikiText() {
     echo "=========== $FUNCNAME run begin ==========="
-    rm -rf log
+    
     python ./tools/eval.py \
-        -c ./ppfleetx/configs/nlp/gpt/eval_gpt_345M_single_card.yaml \
+        -c ././ppfleetx/configs/nlp/gpt/eval_gpt_345M_single_card.yaml \
         -o Engine.save_load.ckpt_dir=./ckpt/PaddleFleetX_GPT_345M_220826 \
         -o Offline_Eval.eval_path=./wikitext-103/wiki.valid.tokens \
         -o Offline_Eval.overlapping_eval=32 \
@@ -394,9 +402,9 @@ function gpt_eval_WikiText() {
 
 function gpt_eval_LAMBADA() {
     echo "=========== $FUNCNAME run begin ==========="
-    rm -rf log
+    
     python ./tools/eval.py \
-        -c ./ppfleetx/configs/nlp/gpt/eval_gpt_345M_single_card.yaml \
+        -c ././ppfleetx/configs/nlp/gpt/eval_gpt_345M_single_card.yaml \
         -o Engine.save_load.ckpt_dir=./ckpt/PaddleFleetX_GPT_345M_220826 \
         -o Offline_Eval.eval_path=./lambada_test.jsonl \
         -o Offline_Eval.cloze_eval=True \
@@ -510,20 +518,20 @@ function check_result() {
 function before_hook_for_gpt() {
     echo -e "\033[31m ---- Set FLAGS for GPT dygraph cases  \033[0m"
     env | grep FLAGS
-    export http_proxy=${proxy}
-    export https_proxy=${proxy}
-    export no_proxy=bcebos.com
+    # export http_proxy=${proxy}
+    # export https_proxy=${proxy}
+    # export no_proxy=bcebos.com
     if [[ $FLAGS_install_deps == 0 ]];then
         echo -e "\033[31m ---- Install requirements for GPT dygraph cases  \033[0m"
-        cp requirements.txt requirements_nlp.txt
-        sed -i '/paddlenlp/d' requirements.txt
-        python -m pip install -r requirements.txt --force-reinstall
-        sed -i '/paddlenlp/!d' requirements_nlp.txt
-        python -m pip install -r requirements_nlp.txt
-        python -m pip install -r $root_path/requirements.txt
-        python -m pip install -r $root_path/requirements-dev.txt
-        python -m pip install --no-cache-dir https://paddlenlp.bj.bcebos.com/wheels/paddlenlp-ci-py3-none-any.whl --force-reinstall --no-dependencies
-        python -c "import paddlenlp; print('paddlenlp commit:',paddlenlp.version.commit)";
+        # cp requirements.txt requirements_nlp.txt
+        # sed -i '/paddlenlp/d' requirements.txt
+        # python -m pip install -r requirements.txt --force-reinstall
+        # sed -i '/paddlenlp/!d' requirements_nlp.txt
+        # python -m pip install -r requirements_nlp.txt
+        # python -m pip install -r $root_path/requirements.txt
+        # python -m pip install -r $root_path/requirements-dev.txt
+        # python -m pip install --no-cache-dir https://paddlenlp.bj.bcebos.com/wheels/paddlenlp-ci-py3-none-any.whl --force-reinstall --no-dependencies
+        # python -c "import paddlenlp; print('paddlenlp commit:',paddlenlp.version.commit)";
     else
         echo -e "\033[31m ---- Skip install requirements for GPT dygraph cases  \033[0m"
     fi
@@ -542,8 +550,8 @@ function before_hook_for_gpt() {
     else
         echo -e "\033[31m ---- Skip download data for GPT dygraph cases \033[0m"
     fi
-    echo -e "\033[31m ---- Install ppfleetx/ops  \033[0m"
-    cd ppfleetx/ops && python setup_cuda.py install && cd ../..
+    echo -e "\033[31m ---- Install ./ppfleetx/ops  \033[0m"
+    cd ./ppfleetx/ops && python setup_cuda.py install && cd ../..
 
     echo -e "\033[31m ---- download other data  \033[0m"
     rm -rf ckpt
@@ -567,15 +575,15 @@ function before_hook_for_gpt() {
         wget -O ${gpt_data_path}/dataset/wikitext_103_en/wikitext-103-en.txt http://fleet.bj.bcebos.com/datasets/gpt/wikitext-103-en.txt
     fi
 
-    rm -rf wikitext-103
-    if [[ -e ${gpt_data_path}/wikitext-103 ]]; then
-        echo "wikitext-103 downloaded"
-    else
-        # download wikitext-103 for gpt eval
-        wget -O ${gpt_data_path}/wikitext-103-v1.zip https://s3.amazonaws.com/research.metamind.io/wikitext/wikitext-103-v1.zip
-        unzip -q ${gpt_data_path}/wikitext-103-v1.zip -d ${gpt_data_path}/
-        rm -rf ${gpt_data_path}/wikitext-103-v1.zip
-    fi
+    # rm -rf wikitext-103
+    # if [[ -e ${gpt_data_path}/wikitext-103 ]]; then
+    #     echo "wikitext-103 downloaded"
+    # else
+    #     # download wikitext-103 for gpt eval
+    #     wget -O ${gpt_data_path}/wikitext-103-v1.zip https://s3.amazonaws.com/research.metamind.io/wikitext/wikitext-103-v1.zip
+    #     unzip -q ${gpt_data_path}/wikitext-103-v1.zip -d ${gpt_data_path}/
+    #     rm -rf ${gpt_data_path}/wikitext-103-v1.zip
+    # fi
 
     rm -rf lambada_test.jsonl
     if [[ -e ${gpt_data_path}/lambada_test.jsonl ]]; then
@@ -605,12 +613,12 @@ function before_hook_for_gpt() {
         rm -rf ${gpt_data_path}/GPT_345M_QAT_wo_analysis.tar
     fi
 
-    ln -s ${gpt_data_path}/ckpt ${gpt_case_path}/ckpt
+    # ln -s ${gpt_data_path}/ckpt ${gpt_case_path}/ckpt
     cp -r ${gpt_data_path}/dataset ${gpt_case_path}/
-    ln -s ${gpt_data_path}/wikitext-103 ${gpt_case_path}/wikitext-103
+    # ln -s ${gpt_data_path}/wikitext-103 ${gpt_case_path}/wikitext-103
     cp ${gpt_data_path}/lambada_test.jsonl ${gpt_case_path}/
-    ln -s ${gpt_data_path}/pretrained ${gpt_case_path}/pretrained
-    ln -s ${gpt_data_path}/GPT_345M_QAT_wo_analysis ${gpt_case_path}/GPT_345M_QAT_wo_analysis
+    # ln -s ${gpt_data_path}/pretrained ${gpt_case_path}/pretrained
+    # ln -s ${gpt_data_path}/GPT_345M_QAT_wo_analysis ${gpt_case_path}/GPT_345M_QAT_wo_analysis
 }
 
 function before_hook_for_llm_gpt() {
@@ -618,9 +626,9 @@ function before_hook_for_llm_gpt() {
     export FLAGS_cudnn_deterministic=1
     export FLAGS_embedding_deterministic=1
     env | grep FLAGS
-    export http_proxy=${proxy}
-    export https_proxy=${proxy}
-    export no_proxy=bcebos.com
+    # export http_proxy=${proxy}
+    # export https_proxy=${proxy}
+    # export no_proxy=bcebos.com
     python -m pip install -r $root_path/requirements.txt
     python -m pip install -r $root_path/requirements-dev.txt
     if [[ ! $FLAGS_download_data =~ "llm_gpt" ]];then

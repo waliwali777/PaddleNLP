@@ -16,14 +16,14 @@
 
 set -e
 
-export log_path=/workspace/case_logs
-export root_path=/workspace/PaddleNLP
+export log_path=/paddle/xuexixi/PaddleNLPcase_logs
+export root_path=/paddle/xuexixi/PaddleNLP
 
 export gpt_case_path=$root_path/slm/model_zoo/gpt-3
 export gpt_data_path=/fleetx_data
 
 export llama_case_path=$root_path/llm/auto_parallel/llama
-export llama_data_path=/llama_data
+export llama_data_path=$root_path/llm/auto_parallel/llama/
 export llm_gpt_case_path=$root_path/llm/auto_parallel/gpt-3
 
 unset CUDA_VISIBLE_DEVICES
@@ -40,21 +40,35 @@ IS_A100=$(is_a100)
 
 # NOTE: Please place the new tests as much as possible after the existing tests
 function llama_case_list_auto() {
+    echo "xxx ----------------------- end_time: $(date +%s) -----------------------"
     llama_dygraph_auto_bs8_fp32_DP2
+    echo "xxx ----------------------- end_time: $(date +%s) -----------------------"
     llama_dygraph_auto_bs8_fp32_DP2-MP2
+    echo "xxx ----------------------- end_time: $(date +%s) -----------------------"
     llama_dygraph_auto_bs8_fp32_DP2-MP2-PP2
+    echo "xxx ----------------------- end_time: $(date +%s) -----------------------"
     llama_dygraph_auto_bs8_fp16_DP2-MP2-PP2
+    echo "xxx ----------------------- end_time: $(date +%s) -----------------------"
     llama_dy2st_auto_bs4_bf16_DP1-MP1-PP4-SD2-VPP3_split_bw
+    echo "xxx ----------------------- end_time: $(date +%s) -----------------------"
     llama_dy2st_auto_bs4_bf16_DP1-MP1-PP4-SD2
-    
+    echo "xxx ----------------------- end_time: $(date +%s) -----------------------"
     llama_align_dygraph_dy2st_auto_bs2_bf16_DP2-MP1-PP1
+    echo "xxx ----------------------- end_time: $(date +%s) -----------------------"
     llama_pir_auto_fuse_ffn_attention_qkv_MP2
+    echo "xxx ----------------------- end_time: $(date +%s) -----------------------"
     llama_convert_hybrid_ckpt_to_auto_parallel_bs2_fp32_DP2-MP1-PP1
+    echo "xxx ----------------------- end_time: $(date +%s) -----------------------"
     llama_align_dygraph_dy2st_pir_auto_bs2_bf16_DP2-MP2-PP1-SP
+    echo "xxx ----------------------- end_time: $(date +%s) -----------------------"
     llama_align_dygraph_dy2st_pir_auto_bs2_bf16_DP2-MP2-PP2-SP
+    echo "xxx ----------------------- end_time: $(date +%s) -----------------------"
     llama_align_dygraph_dy2st_pir_auto_grad_merge_bs2_fp32_DP1-MP1-PP1
+    echo "xxx ----------------------- end_time: $(date +%s) -----------------------"
     llama_align_dy2st_fthenb_and_vpp_auto_bs2_fp32_DP1-MP1-PP4
+    echo "xxx ----------------------- end_time: $(date +%s) -----------------------"
     llama_align_dygraph_dy2st_pir_auto_pp_bs2_bf16_DP1-MP1-PP4
+    echo "xxx ----------------------- end_time: $(date +%s) -----------------------"
 }
 
 function llm_gpt_case_list_auto() {
@@ -931,7 +945,9 @@ function llama_align_dygraph_dy2st_auto_bs2_bf16_DP2-MP1-PP1() {
 }
 
 function llama_align_dygraph_dy2st_pir_auto_grad_merge_bs2_fp32_DP1-MP1-PP1() {
+    echo "=====xxx======"
     echo "=========== $FUNCNAME run begin ==========="
+    export PYTHONPATH=$root_path/:$PYTHONPATH
     export FLAGS_call_stack_level=3
     export NVIDIA_TF32_OVERRIDE=0
     export FLAGS_max_inplace_grad_add=3
@@ -939,7 +955,7 @@ function llama_align_dygraph_dy2st_pir_auto_grad_merge_bs2_fp32_DP1-MP1-PP1() {
     task_name="llama_align_dygraph_dy2st_pir_auto_grad_merge_bs2_fp32_DP2"
     case_out_dir="output/$task_name"
     case_log_dir="output/$task_name""_log"
-
+    echo "=====xxx 1======"
     loss1=0
     loss2=0
     use_pir=1
@@ -951,9 +967,9 @@ function llama_align_dygraph_dy2st_pir_auto_grad_merge_bs2_fp32_DP1-MP1-PP1() {
         rm -rf $case_out_dir
         rm -rf $case_log_dir
         rm -rf ${log_path}/$FUNCNAME
-
-        /usr/bin/python -u -m paddle.distributed.launch \
-            --gpus "0" \
+        echo "=====xxx 2======"
+        python -u -m paddle.distributed.launch \
+            --gpus "1" \
             --log_dir $case_log_dir \
             run_pretrain_auto.py \
             --model_type "llama" \
@@ -1030,6 +1046,7 @@ function llama_align_dygraph_dy2st_pir_auto_grad_merge_bs2_fp32_DP1-MP1-PP1() {
 
 function llama_align_dy2st_fthenb_and_vpp_auto_bs2_fp32_DP1-MP1-PP4() {
     echo "=========== $FUNCNAME run begin ==========="
+    export PYTHONPATH=$root_path/:$PYTHONPATH
     # Only A100 support this case.
     if [ $IS_A100 -ne 0 ]; then
         export FLAGS_call_stack_level=3
@@ -1138,6 +1155,7 @@ function llama_align_dy2st_fthenb_and_vpp_auto_bs2_fp32_DP1-MP1-PP4() {
 
 function llama_align_dygraph_dy2st_pir_auto_pp_bs2_bf16_DP1-MP1-PP4() {
     echo "=========== $FUNCNAME run begin ==========="
+    export PYTHONPATH=$root_path/:$PYTHONPATH
     export FLAGS_call_stack_level=3
     export NVIDIA_TF32_OVERRIDE=0
     export FLAGS_max_inplace_grad_add=3
@@ -2139,20 +2157,21 @@ function before_hook_for_gpt() {
     export FLAGS_cudnn_deterministic=1             # 1：关闭随机性
     unset CUDA_MODULE_LOADING
     env | grep FLAGS
-    export http_proxy=${proxy}
-    export https_proxy=${proxy}
-    export no_proxy=bcebos.com
+    # export http_proxy=${proxy}
+    # export https_proxy=${proxy}
+    # export no_proxy=bcebos.com
+    echo "xuexixi----2-----------"
     if [[ $FLAGS_install_deps == 0 ]];then
         echo -e "\033[31m ---- Install requirements for GPT auto cases  \033[0m"
-        cp requirements.txt requirements_nlp.txt
-        sed -i '/paddlenlp/d' requirements.txt
-        python -m pip install -r requirements.txt --force-reinstall
-        sed -i '/paddlenlp/!d' requirements_nlp.txt
-        python -m pip install -r requirements_nlp.txt
-        python -m pip install -r $root_path/requirements.txt
-        python -m pip install -r $root_path/requirements-dev.txt
-        python -m pip install --no-cache-dir https://paddlenlp.bj.bcebos.com/wheels/paddlenlp-ci-py3-none-any.whl --force-reinstall --no-dependencies
-        python -c "import paddlenlp; print('paddlenlp commit:',paddlenlp.version.commit)";
+        # cp requirements.txt requirements_nlp.txt
+        # sed -i '/paddlenlp/d' requirements.txt
+        # python -m pip install -r requirements.txt --force-reinstall
+        # sed -i '/paddlenlp/!d' requirements_nlp.txt
+        # python -m pip install -r requirements_nlp.txt
+        # python -m pip install -r $root_path/requirements.txt
+        # python -m pip install -r $root_path/requirements-dev.txt
+        # python -m pip install --no-cache-dir https://paddlenlp.bj.bcebos.com/wheels/paddlenlp-ci-py3-none-any.whl --force-reinstall --no-dependencies
+        # python -c "import paddlenlp; print('paddlenlp commit:',paddlenlp.version.commit)";
     else
         echo -e "\033[31m ---- Skip install requirements for GPT auto cases  \033[0m"
     fi
@@ -2181,11 +2200,14 @@ function before_hook_for_llama() {
     export FLAGS_program_topo_reorder=1            # 1: 反向对齐动手拓扑排序
     unset CUDA_MODULE_LOADING
     env | grep FLAGS
-    export http_proxy=${proxy}
-    export https_proxy=${proxy}
-    export no_proxy=bcebos.com
-    python -m pip install -r $root_path/requirements.txt
-    python -m pip install -r $root_path/requirements-dev.txt
+    # export http_proxy=${proxy}
+    # export https_proxy=${proxy}
+    # export no_proxy=bcebos.com
+    echo " ---------xxx-----------"
+    # pip install -r $root_path/requirements.txt
+    echo " ---------xxx-1----------"
+    # python -m pip install -r $root_path/requirements-dev.txt
+    echo " ---------xxx-2----------"
     if [[ ! $FLAGS_download_data =~ "llama" ]];then
         echo -e "\033[31m ---- Download LLaMA data  \033[0m"
         rm -rf data
@@ -2197,7 +2219,7 @@ function before_hook_for_llama() {
             wget -O ${llama_data_path}/data/llama_openwebtext_100k_ids.npy https://bj.bcebos.com/paddlenlp/models/transformers/llama/data/llama_openwebtext_100k_ids.npy;
             wget -O ${llama_data_path}/data/llama_openwebtext_100k_idx.npz https://bj.bcebos.com/paddlenlp/models/transformers/llama/data/llama_openwebtext_100k_idx.npz;
         fi
-        cp -r ${llama_data_path}/data ${llama_case_path}/
+        # cp -r ${llama_data_path}/data ${llama_case_path}/
     else
         echo -e "\033[31m ---- Skip download LLaMA data \033[0m"
     fi
@@ -2207,7 +2229,7 @@ echo -e "\033[31m ---- Start executing $1 \033[0m"
 export exec_case=$1
 export FLAGS_install_deps=$2
 export FLAGS_download_data=$3
-
+echo "xuexixi---------1-----------"
 if [[ $exec_case =~ "gpt" ]];then
     cd ${gpt_case_path}
     before_hook_for_gpt
