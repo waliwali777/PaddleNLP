@@ -43,8 +43,8 @@ target_path_for_ci_scripts="scripts/distribute"
 ####################################
 install_paddle(){
     echo -e "\033[31m ---- Install paddlepaddle-gpu  \033"
-    # python -m pip install --no-cache-dir --user ${paddle} --force-reinstall --no-dependencies;
-    # python -c "import paddle; print('paddle version:',paddle.__version__,'\npaddle commit:',paddle.version.commit)";
+    python -m pip install --no-cache-dir --user ${paddle} --force-reinstall --no-dependencies;
+    python -c "import paddle; print('paddle version:',paddle.__version__,'\npaddle commit:',paddle.version.commit)";
 }
 
 install_paddlenlp(){
@@ -67,9 +67,9 @@ install_paddlenlp(){
 install_external_ops(){
     echo -e "\033[31m ---- Install extern_ops  \033"
     export PYTHONPATH=${nlp_dir}:$PYTHONPATH
-    # cd ${nlp_dir}/slm/model_zoo/gpt-3/external_ops
-    # python setup.py install
-    # python -c "import fused_ln;";
+    cd ${nlp_dir}/slm/model_zoo/gpt-3/external_ops
+    python setup.py install
+    python -c "import fused_ln;";
 }
 
 is_gpu_type() {  
@@ -166,33 +166,26 @@ if [[ ${#case_list[*]} -ne 0 ]];then
     # Install paddlenlp
     install_paddlenlp
     # Install external_ops
-    # install_external_ops
+    install_external_ops
     
     case_num=1
     export FLAGS_install_deps=0
     export FLAGS_download_data=""
     echo "xuexixi--------------------"
-    # if [[ $(contain_case llama_auto ${case_list[@]}; echo $?) -eq 1 ]];then
-    #     echo -e "\033[31m ---- running case $case_num/${#case_list[*]}: llama_auto \033"
-    #     echo "xuexixi-----0---------------"
-    #     bash /paddle/xuexixi/PaddleNLP/scripts/distribute/ci_case_auto.sh llama_case_list_auto $FLAGS_install_deps $FLAGS_download_data
-    #     print_info $? `ls -lt ${log_path} | grep llama | head -n 1 | awk '{print $9}'` llama_auto
-    #     export FLAGS_download_data="llama ""$FLAGS_download_data"
-    #     end_time=$(date +%s)  
-    #     diff_seconds=$((end_time - begin_time))  
-    #     echo "Program ran for $diff_seconds seconds."
-    #     let case_num++
-    # fi
-    echo "xxx ----------------------- end_time: $(date +%s) -----------------------"
+    if [[ $(contain_case llama_auto ${case_list[@]}; echo $?) -eq 1 ]];then
+        echo -e "\033[31m ---- running case $case_num/${#case_list[*]}: llama_auto \033"
+        echo "xuexixi-----0---------------"
+        bash /paddle/xuexixi/PaddleNLP/scripts/distribute/ci_case_auto.sh llama_case_list_auto $FLAGS_install_deps $FLAGS_download_data
+        print_info $? `ls -lt ${log_path} | grep llama | head -n 1 | awk '{print $9}'` llama_auto
+        export FLAGS_download_data="llama ""$FLAGS_download_data"
+        let case_num++
+    fi
     if [[ $(contain_case gpt-3_auto ${case_list[@]}; echo $?) -eq 1 ]];then
         echo -e "\033[31m ---- running case $case_num/${#case_list[*]}: gpt-3_auto \033"
         bash /paddle/xuexixi/PaddleNLP/scripts/distribute/ci_case_auto.sh llm_gpt_case_list_auto $FLAGS_install_deps $FLAGS_download_data
         print_info $? `ls -lt ${log_path} | grep gpt | head -n 1 | awk '{print $9}'` gpt-3_auto
         export FLAGS_install_deps=1
         export FLAGS_download_data="gpt ""$FLAGS_download_data"
-        end_time=$(date +%s)  
-        diff_seconds=$((end_time - begin_time))  
-        echo "Program ran for $diff_seconds seconds."
         let case_num++        
     fi
     if [[ $(contain_case gpt-3_dygraph ${case_list[@]}; echo $?) -eq 1 ]];then
@@ -221,8 +214,7 @@ else
 fi
 
 end_time=$(date +%s)  
-echo "xxx ----------------------- end_time: $(date +%s) -----------------------"
 diff_seconds=$((end_time - begin_time))  
-echo "Program run for $diff_seconds seconds."
+echo "Program ran for $diff_seconds seconds."
 
 exit $EXCODE
