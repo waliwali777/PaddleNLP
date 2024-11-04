@@ -36,24 +36,25 @@ function track_case_status() {
     cd ${log_path} || { echo "Failed to enter log_path: $log_path"; return 1; }  
   
     total_count=$(ls -1 "$prefix"* 2>/dev/null | wc -l)  
-    run_fail_count=$(ls -1 "$prefix"*_FAIL 2>/dev/null | wc -l)  
-    loss_fail_count=$(grep 'check failed! ' result.log | awk -v prefix="$prefix_var" '{if ($2 ~ "^" prefix) print $2}'| wc -l)
+    run_fail_count=$(ls -1 "$prefix"*_FAIL* 2>/dev/null | wc -l)  
+    loss_fail_count=$(grep 'loss diff check failed! ' result.log | awk -v prefix="$prefix" '{if ($2 ~ "^" prefix) print $2}'| wc -l)
     
-    # return original path 
     echo -e "\033[31m ---- $case_name total tests :  $total_count \033"
     if [ $run_fail_count -eq 0 ] && [ $loss_fail_count  -eq 0 ]; then
-        echo -e "\033[32m ---- $case_name all cases Success  \033"
+        echo -e "\033[32m ---- all cases Success  \033"
     else
         if [[ $run_fail_count -ne 0 ]] ; then
             echo -e "\033[31m ---- $case_name runtime failed test  :  $run_fail_count \033"
-            ls -1 "$prefix"*_FAIL 2>/dev/null
+            ls -1 "$prefix"*_FAIL* 2>/dev/null
         fi
         if [[ $loss_fail_count -ne 0 ]] ; then
             echo -e "\033[31m ---- $case_name loss verification failed test  :  $loss_fail_count \033"
-            grep 'check failed! ' result.log | awk -v prefix="$prefix_var" '{if ($2 ~ "^" prefix) print $2}'
+            grep 'loss diff check failed! ' result.log | awk -v prefix="$prefix" '{if ($2 ~ "^" prefix) print $2}'
         fi
+        return 2
     fi
     cd "$original_path" || { echo "Failed to return to original path: $original_path"; return 1; }  
+    return 2
 } 
 
 function gpt_case_list_dygraph(){
