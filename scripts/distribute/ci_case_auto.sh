@@ -65,7 +65,7 @@ function track_case_status() {
         return 2
     fi
     cd "$original_path" || { echo "Failed to return to original path: $original_path"; return 1; }  
-    return 2
+    return 0
 } 
 
 # NOTE: Please place the new tests as much as possible after the existing tests
