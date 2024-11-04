@@ -190,8 +190,10 @@ function track_case_status() {
             echo -e "\033[31m ---- $case_name loss verification failed test  :  $loss_fail_count \033"
             grep 'check failed! ' result.log | awk -v prefix="$prefix_var" '{if ($2 ~ "^" prefix) print $2}'
         fi
+        return 2
     fi
     cd "$original_path" || { echo "Failed to return to original path: $original_path"; return 1; }  
+    return 0
 } 
 ####################################
 get_diff_TO_case # 获取待执行case列表
@@ -238,6 +240,7 @@ if [[ ${#case_list[*]} -ne 0 ]];then
     echo -e "\033[31m ---- end run case  \033"
 
     track_case_status  $FUNCNAME ""
+    EXCODE=$?
 else
     echo -e "\033[32m Changed Not CI case, Skips \033"
     EXCODE=0
