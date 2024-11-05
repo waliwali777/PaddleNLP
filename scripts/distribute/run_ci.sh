@@ -183,7 +183,7 @@ function track_case_status() {
   
     total_count=$(ls -1 "$prefix"* 2>/dev/null | wc -l)  
     run_fail_count=$(ls -1 "$prefix"*_FAIL* 2>/dev/null | wc -l)  
-    loss_fail_count=$(grep 'loss diff check failed! ' result.log | awk -v prefix="$prefix" '{if ($2 ~ "^" prefix) print $2}'| wc -l)
+    loss_fail_count=$(grep 'check failed! ' result.log | awk -v prefix="$prefix" '{if ($2 ~ "^" prefix) print $2}'| wc -l)
     
     echo -e "\033[31m ---- $case_name total tests :  $total_count \033"
     if [ $run_fail_count -eq 0 ] && [ $loss_fail_count  -eq 0 ]; then
@@ -191,11 +191,11 @@ function track_case_status() {
     else
         if [[ $run_fail_count -ne 0 ]] ; then
             echo -e "\033[31m ---- $case_name runtime failed test  :  $run_fail_count \033"
-            ls -1 "$prefix"*_FAIL* 2>/dev/null
+            ls -1 "$prefix"*_FAIL* 2>/dev/null | awk -v OFS="\t" '{print "\t" $0 "(failed)"}'
         fi
         if [[ $loss_fail_count -ne 0 ]] ; then
-            echo -e "\033[31m ---- $case_name loss verification failed test  :  $loss_fail_count \033"
-            grep 'loss diff check failed! ' result.log | awk -v prefix="$prefix" '{if ($2 ~ "^" prefix) print $2}'
+            echo -e "\033[31m ---- $case_name verification failed test  :  $loss_fail_count \033"
+            grep 'check failed! ' result.log | awk -v prefix="$prefix" 'BEGIN {OFS="\t"} {if ($2 ~ "^" prefix) print "\t" $2 "(failed)"}'
         fi
         return 2
     fi
