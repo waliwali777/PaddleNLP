@@ -173,6 +173,52 @@ function contain_case(){
     return 0
 }
 ####################################
+function execute_func_list(){
+    cd ${log_path} || { echo "Failed to enter log_path: $log_path"; return 1; } 
+    total_count=0
+    success_count=0
+    runtime_fail_count=0
+    verification_fail_count=0
+    exit_250_count=0
+    while IFS= read -r func_name; do
+        let total_count++
+        excute_num=1
+        while true; do
+            bash $1 exec_case $func_name $FLAGS_install_deps $FLAGS_download_data  
+            result=$?
+            if [ $result -eq 0 ]; then
+                echo "test success!"
+                let success_count++
+            elif [ $result -eq 2 ]; then
+                echo "verification failed!"
+                let verification_fail_count++
+            elif [ $result -eq 250 ]; then
+                if [ $excute_num -eq 1 ]; then
+                    echo "fist time execute failed, try again!"
+                    let excute_num++
+                    continue
+                else
+                    echo "second time execute failed, exit!"
+                    let exit_250_count++
+                fi
+            else
+                echo "test failed!"
+                mv ${log_path}/$func_name ${log_path}/$func_name_FAIL.log
+                echo -e "\033[31m ${log_path}/$func_name_FAIL \033"
+                tail -15 ${log_path}/$func_name_FAIL.log
+                let runtime_fail_count++  
+            fi
+            break
+        done
+    done < functions.txt
+    echo -e "\033[31m $2 test case has complicated \033"
+    echo -e "\033[31m {OFS="\t"}  total tests :  $total_count \033"
+    echo -e "\033[31m {OFS="\t"}  success tests :  $success_count \033"
+    echo -e "\033[31m {OFS="\t"}  runtime fail tests :  $runtime_fail_count \033"
+    echo -e "\033[31m {OFS="\t"}  verification fail tests :  $verification_fail_count \033"
+    echo -e "\033[31m {OFS="\t"}  exit 250 tests(intermittent issue) :  $exit_250_count \033"
+}
+####################################
 function track_case_status() {  
     local case_name="$1"  
     local prefix="$2"  
@@ -181,7 +227,7 @@ function track_case_status() {
     original_path=$(pwd)  
     cd ${log_path} || { echo "Failed to enter log_path: $log_path"; return 1; }  
   
-    total_count=$(ls -1 "$prefix"* 2>/dev/null | wc -l)  
+    total_count=$(ls -1 "$prefix"* 2>/dev/null | grep -Ev 'result\.log|function\.txt' | wc -l)
     run_fail_count=$(ls -1 "$prefix"*_FAIL* 2>/dev/null | wc -l)  
     loss_fail_count=$(grep 'check failed! ' result.log | awk -v prefix="$prefix" '{if ($2 ~ "^" prefix) print $2}'| wc -l)
     
@@ -223,23 +269,26 @@ if [[ ${#case_list[*]} -ne 0 ]];then
     export FLAGS_download_data=""
     if [[ $(contain_case llama_auto ${case_list[@]}; echo $?) -eq 1 ]];then
         echo -e "\033[31m ---- running case $case_num/${#case_list[*]}: llama_auto \033"
-        bash /workspace/PaddleNLP/scripts/distribute/ci_case_auto.sh llama_case_list_auto $FLAGS_install_deps $FLAGS_download_data
-        print_info $? `ls -lt ${log_path} | grep llama | head -n 1 | awk '{print $9}'` llama_auto
+        cmd=/workspace/PaddleNLP/scripts/distribute/ci_case_auto.sh
+        bash  $cmd prepare_case llama_case_list_auto $FLAGS_install_deps $FLAGS_download_data
+        execute_func_list $cmd llama_auto
         export FLAGS_download_data="llama ""$FLAGS_download_data"
         let case_num++
     fi
     if [[ $(contain_case gpt-3_auto ${case_list[@]}; echo $?) -eq 1 ]];then
         echo -e "\033[31m ---- running case $case_num/${#case_list[*]}: gpt-3_auto \033"
-        bash /workspace/PaddleNLP/scripts/distribute/ci_case_auto.sh llm_gpt_case_list_auto $FLAGS_install_deps $FLAGS_download_data
-        print_info $? `ls -lt ${log_path} | grep gpt | head -n 1 | awk '{print $9}'` gpt-3_auto
+        cmd=/workspace/PaddleNLP/scripts/distribute/ci_case_auto.sh 
+        bash $cmd prepare_case llm_gpt_case_list_auto $FLAGS_install_deps $FLAGS_download_data
+        execute_func_list $cmd gpt-3_auto
         export FLAGS_install_deps=1
         export FLAGS_download_data="gpt ""$FLAGS_download_data"
         let case_num++        
     fi
     if [[ $(contain_case gpt-3_dygraph ${case_list[@]}; echo $?) -eq 1 ]];then
         echo -e "\033[31m ---- running case $case_num/${#case_list[*]}: gpt-3_dygraph \033"
-        bash /workspace/PaddleNLP/scripts/distribute/ci_case_dy.sh gpt_case_list_dygraph $FLAGS_install_deps $FLAGS_download_data
-        print_info $? `ls -lt ${log_path} | grep gpt | head -n 1 | awk '{print $9}'` gpt-3_dygraph
+        cmd=/workspace/PaddleNLP/scripts/distribute/ci_case_dy.sh
+        bash $cmd prepare_case gpt_case_list_dygraph $FLAGS_install_deps $FLAGS_download_data
+        execute_func_list $cmdgpt-3_dygraph
         export FLAGS_install_deps=1
         export FLAGS_download_data="gpt ""$FLAGS_download_data"
         let case_num++
