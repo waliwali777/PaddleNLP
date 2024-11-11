@@ -162,18 +162,18 @@ function execute_func_list(){
             bash $1 exec_case $func_name $FLAGS_install_deps $FLAGS_download_data  
             result=$?
             if [ $result -eq 0 ]; then
-                echo "test success!"
+                echo -e "\033[32m test success!"
                 let success_count++
             elif [ $result -eq 2 ]; then
-                echo "verification failed!"
+                echo -e "\033[31m verification failed!"
                 let verification_fail_count++
             elif [ $result -eq 250 ]; then
                 if [ $excute_num -eq 1 ]; then
-                    echo "fist time execute failed, try again!"
+                    echo -e "\033[31m fist time execute failed, try again!"
                     let excute_num++
                     continue
                 else
-                    echo "second time execute failed, exit!"
+                    echo -e "\033[31m second time execute failed, exit!"
                     let exit_250_count++
                 fi
             else
