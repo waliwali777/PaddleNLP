@@ -117,6 +117,7 @@ function llm_qwen_case_list_auto() {
 
 function llama_dygraph_auto_bs8_fp32_DP2() {
     echo "=========== $FUNCNAME run begin ==========="
+    export_env
     cd ${llama_case_path}
     export PYTHONPATH=$root_path/:$PYTHONPATH
     export FLAGS_call_stack_level=3
@@ -188,6 +189,7 @@ function llama_dygraph_auto_bs8_fp32_DP2() {
 
 function llama_dygraph_auto_bs8_fp32_DP2-MP2() {
     echo "=========== $FUNCNAME run begin ==========="
+    export_env
     cd ${llama_case_path}
     export PYTHONPATH=$root_path/:$PYTHONPATH
     export FLAGS_call_stack_level=3
@@ -259,6 +261,7 @@ function llama_dygraph_auto_bs8_fp32_DP2-MP2() {
 
 function llama_dygraph_auto_bs8_fp32_DP2-MP2-PP2() {
     echo "=========== $FUNCNAME run begin ==========="
+    export_env
     cd ${llama_case_path}
     export PYTHONPATH=$root_path/:$PYTHONPATH
     export FLAGS_call_stack_level=3
@@ -330,6 +333,7 @@ function llama_dygraph_auto_bs8_fp32_DP2-MP2-PP2() {
 
 function llama_dygraph_auto_bs8_fp16_DP2-MP2-PP2() {
     echo "=========== $FUNCNAME run begin ==========="
+    export_env
     cd ${llama_case_path}
     export PYTHONPATH=$root_path/:$PYTHONPATH
     export FLAGS_call_stack_level=3
@@ -405,6 +409,7 @@ function llama_dy2st_auto_bs4_bf16_DP1-MP1-PP4-SD2() {
     echo IS_A100 is $IS_A100
     if [ $IS_A100 -ne 0 ]; then
         echo "=========== $FUNCNAME run begin ==========="
+        export_env
         cd ${llama_case_path}
         export PYTHONPATH=$root_path/:$PYTHONPATH
         export FLAGS_call_stack_level=3
@@ -505,6 +510,7 @@ function llama_dy2st_auto_bs4_bf16_DP1-MP1-PP4-SD2-VPP3_split_bw() {
     echo IS_A100 is $IS_A100
     if [ $IS_A100 -ne 0 ]; then
         echo "=========== $FUNCNAME run begin ==========="
+        export_env
         cd ${llama_case_path}
         export PYTHONPATH=$root_path/:$PYTHONPATH
         export FLAGS_call_stack_level=3
@@ -603,6 +609,7 @@ function llama_dy2st_auto_bs4_bf16_DP1-MP1-PP4-SD2-VPP3_split_bw() {
 
 function llama_align_dygraph_dy2st_pir_auto_bs2_bf16_DP2-MP2-PP1-SP() {
     echo "=========== $FUNCNAME run begin ==========="
+    export_env
     cd ${llama_case_path}
     export PYTHONPATH=$root_path/:$PYTHONPATH
     export PYTHONPATH=/paddle/Paddle/build_gpu/python/:$PYTHONPATH
@@ -698,6 +705,7 @@ function llama_align_dygraph_dy2st_pir_auto_bs2_bf16_DP2-MP2-PP1-SP() {
 
 function llama_pir_auto_fuse_ffn_attention_qkv_MP2() {
     echo "=========== $FUNCNAME run begin ==========="
+    export_env
     cd ${llama_case_path}
     export PYTHONPATH=$root_path/:$PYTHONPATH
     export FLAGS_call_stack_level=3
@@ -795,6 +803,7 @@ function llama_pir_auto_fuse_ffn_attention_qkv_MP2() {
 
 function llama_align_dygraph_dy2st_pir_auto_bs2_bf16_DP2-MP2-PP2-SP() {
     echo "=========== $FUNCNAME run begin ==========="
+    export_env
     cd ${llama_case_path}
     export PYTHONPATH=$root_path/:$PYTHONPATH
     export PYTHONPATH=/paddle/Paddle/build_gpu/python/:$PYTHONPATH
@@ -891,6 +900,7 @@ function llama_align_dygraph_dy2st_pir_auto_bs2_bf16_DP2-MP2-PP2-SP() {
 
 function llama_align_dygraph_dy2st_auto_bs2_bf16_DP2-MP1-PP1() {
     echo "=========== $FUNCNAME run begin ==========="
+    export_env
     cd ${llama_case_path}
     export PYTHONPATH=$root_path/:$PYTHONPATH
     export FLAGS_call_stack_level=3
@@ -984,6 +994,7 @@ function llama_align_dygraph_dy2st_auto_bs2_bf16_DP2-MP1-PP1() {
 
 function llama_align_dygraph_dy2st_pir_auto_grad_merge_bs2_fp32_DP1-MP1-PP1() {
     echo "=========== $FUNCNAME run begin ==========="
+    export_env
     cd ${llama_case_path}
     export PYTHONPATH=$root_path/:$PYTHONPATH
     export FLAGS_call_stack_level=3
@@ -1084,6 +1095,7 @@ function llama_align_dygraph_dy2st_pir_auto_grad_merge_bs2_fp32_DP1-MP1-PP1() {
 
 function llama_align_dy2st_fthenb_and_vpp_auto_bs2_fp32_DP1-MP1-PP4() {
     echo "=========== $FUNCNAME run begin ==========="
+    export_env
     cd ${llama_case_path}
     export PYTHONPATH=$root_path/:$PYTHONPATH
     # Only A100 support this case.
@@ -1194,6 +1206,7 @@ function llama_align_dy2st_fthenb_and_vpp_auto_bs2_fp32_DP1-MP1-PP4() {
 
 function llama_align_dygraph_dy2st_pir_auto_pp_bs2_bf16_DP1-MP1-PP4() {
     echo "=========== $FUNCNAME run begin ==========="
+    export_env
     cd ${llama_case_path}
     export PYTHONPATH=$root_path/:$PYTHONPATH
     export FLAGS_call_stack_level=3
@@ -1302,6 +1315,7 @@ function llama_align_dygraph_dy2st_pir_auto_pp_bs2_bf16_DP1-MP1-PP4() {
 
 function llama_convert_hybrid_ckpt_to_auto_parallel_bs2_fp32_DP2-MP1-PP1() {
     echo "=========== $FUNCNAME run begin ==========="
+    export_env
     cd ${llama_case_path}
     export PYTHONPATH=$root_path/:$PYTHONPATH
     export FLAGS_call_stack_level=3
@@ -1462,6 +1476,7 @@ function llama_convert_hybrid_ckpt_to_auto_parallel_bs2_fp32_DP2-MP1-PP1() {
 
 function llm_gpt_dygraph_auto_bs8_fp32_DP2() {
     echo "=========== $FUNCNAME run begin ==========="
+    export_env
     cd ${gpt_case_path}
     export PYTHONPATH=$root_path/:$PYTHONPATH
     export FLAGS_call_stack_level=3
@@ -1533,6 +1548,7 @@ function llm_gpt_dygraph_auto_bs8_fp32_DP2() {
 
 function llm_gpt_dygraph_auto_bs8_fp32_DP2-MP2() {
     echo "=========== $FUNCNAME run begin ==========="
+    export_env
     cd ${gpt_case_path}
     export PYTHONPATH=$root_path/:$PYTHONPATH
     export FLAGS_call_stack_level=3
@@ -1606,6 +1622,7 @@ function llm_gpt_dygraph_auto_bs8_fp32_DP2-MP2() {
 
 function llm_gpt_dygraph_auto_bs8_fp32_DP2-MP2-PP2() {
     echo "=========== $FUNCNAME run begin ==========="
+    export_env
     cd ${gpt_case_path}
     export PYTHONPATH=$root_path/:$PYTHONPATH
     export FLAGS_call_stack_level=3
@@ -1680,6 +1697,7 @@ function llm_gpt_dygraph_auto_bs8_fp32_DP2-MP2-PP2() {
 
 function llm_gpt_dygraph_auto_bs8_fp16_DP2-MP2-PP2() {
     echo "=========== $FUNCNAME run begin ==========="
+    export_env
     cd ${gpt_case_path}
     export PYTHONPATH=$root_path/:$PYTHONPATH
     export FLAGS_call_stack_level=3
@@ -1754,6 +1772,7 @@ function llm_gpt_dygraph_auto_bs8_fp16_DP2-MP2-PP2() {
 }
 
 function llm_qwen_dygraph_auto_bs1_fp32_DP2() {
+    export_env
     cd ${gpt_case_path}
     set -x
 
@@ -1848,6 +1867,7 @@ EOF
 }
 
 function llm_qwen_dygraph_auto_bs1_fp32_DP2-MP2() {
+    export_env
     cd ${gpt_case_path}
     set -x
 
@@ -1942,6 +1962,7 @@ EOF
 }
 
 function llm_qwen_dygraph_auto_bs1_fp32_DP2-MP2-PP2() {
+    export_env
     cd ${gpt_case_path}
     set -x
 
@@ -2036,6 +2057,7 @@ EOF
 }
 
 function llm_qwen_dygraph_auto_bs1_bf16_DP2-MP2-PP2() {
+    export_env
     cd ${gpt_case_path}
     set -x
 
@@ -2239,6 +2261,18 @@ function before_hook_for_gpt() {
     else
         echo -e "\033[31m ---- Skip download gpt data \033[0m"
     fi
+}
+
+function export_env() {
+    export FLAGS_new_executor_micro_batching=True  # True：打开新执行器
+    export FLAGS_embedding_deterministic=1         # 1：关闭随机性
+    export FLAGS_cudnn_deterministic=1             # 1：关闭随机性
+    export FLAGS_program_topo_reorder=1            # 1: 反向对齐动手拓扑排序
+    unset CUDA_MODULE_LOADING
+    env | grep FLAGS
+    export http_proxy=${proxy}
+    export https_proxy=${proxy}
+    export no_proxy=bcebos.com
 }
 
 function before_hook_for_llama() {

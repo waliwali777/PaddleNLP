@@ -470,6 +470,8 @@ function gpt_eval_LAMBADA() {
 function llm_gpt_recompute_bs32_bf16_MP2-SD4-stage1() {
     echo "=========== $FUNCNAME run begin ==========="
     cd ${llm_gpt_case_path}
+    export FLAGS_cudnn_deterministic=1
+    export FLAGS_embedding_deterministic=1
     export PYTHONPATH=$root_path/:$PYTHONPATH
     log_dir=mylog
     rm -rf $log_dir
