@@ -35,7 +35,7 @@ function track_case_status() {
     original_path=$(pwd)  
     cd ${log_path} || { echo "Failed to enter log_path: $log_path"; return 1; }  
   
-    total_count=$(ls -1 "$prefix"* 2>/dev/null | wc -l)  
+    total_count=$(ls -1 "$prefix"* 2>/dev/null | grep -Ev 'result\.log|functions\.txt' | wc -l)
     run_fail_count=$(ls -1 "$prefix"*_FAIL* 2>/dev/null | wc -l)  
     loss_fail_count=$(grep 'check failed! ' result.log | awk -v prefix="$prefix" '{if ($2 ~ "^" prefix) print $2}'| wc -l)
     

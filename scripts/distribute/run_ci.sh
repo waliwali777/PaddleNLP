@@ -138,31 +138,6 @@ else
 fi
 }
 ####################################
-print_info(){
-if [ $1 -eq 250 ];then
-    #解决异常退出-6的问题，CI中的偶现问题，无法复现
-    echo -e "\033[1;31m"  
-    echo -e "\033[1;31m The CI execution encountered an abnormal termination with error code exit -6. \033[0m"
-    echo -e "\033[1;31m This is an intermittent issue. \033[0m"
-    echo -e "\033[1;31m Please re-run the CI. \033[0m"
-    echo -e "\033[1;31m"  
-    exit 2
-fi
-if [[ $1 -ne 0 ]];then
-    EXCODE=2
-    if [ ! -f ${log_path}/$2 ];then
-        echo -e "\033[31m run $2 CI FAIL \033"
-    else
-        mv ${log_path}/$2 ${log_path}/$2_FAIL.log
-        echo -e "\033[31m ${log_path}/$2_FAIL \033"
-        tail -10 ${log_path}/$2_FAIL.log
-    fi
-    exit $EXCODE
-else
-    echo -e "\033[32m The $3 CI has completed \033"
-fi
-}
-####################################
 function contain_case(){
     local e
     for e in "${@:2}";do
@@ -212,11 +187,11 @@ function execute_func_list(){
         done
     done < functions.txt
     echo -e "\033[31m $2 test case has complicated \033"
-    echo -e "\033[31m {OFS="\t"}  total tests :  $total_count \033"
-    echo -e "\033[31m {OFS="\t"}  success tests :  $success_count \033"
-    echo -e "\033[31m {OFS="\t"}  runtime fail tests :  $runtime_fail_count \033"
-    echo -e "\033[31m {OFS="\t"}  verification fail tests :  $verification_fail_count \033"
-    echo -e "\033[31m {OFS="\t"}  exit 250 tests(intermittent issue) :  $exit_250_count \033"
+    echo -e "\033[31m $(printf '\t')  total tests :  $total_count \033"
+    echo -e "\033[31m $(printf '\t')  success tests :  $success_count \033"
+    echo -e "\033[31m $(printf '\t')  runtime fail tests :  $runtime_fail_count \033"
+    echo -e "\033[31m $(printf '\t')  verification fail tests :  $verification_fail_count \033"
+    echo -e "\033[31m $(printf '\t')  exit 250 tests(intermittent issue) :  $exit_250_count \033"
 }
 ####################################
 function track_case_status() {  
@@ -227,7 +202,7 @@ function track_case_status() {
     original_path=$(pwd)  
     cd ${log_path} || { echo "Failed to enter log_path: $log_path"; return 1; }  
   
-    total_count=$(ls -1 "$prefix"* 2>/dev/null | grep -Ev 'result\.log|function\.txt' | wc -l)
+    total_count=$(ls -1 "$prefix"* 2>/dev/null | grep -Ev 'result\.log|functions\.txt' | wc -l)
     run_fail_count=$(ls -1 "$prefix"*_FAIL* 2>/dev/null | wc -l)  
     loss_fail_count=$(grep 'check failed! ' result.log | awk -v prefix="$prefix" '{if ($2 ~ "^" prefix) print $2}'| wc -l)
     
@@ -288,7 +263,7 @@ if [[ ${#case_list[*]} -ne 0 ]];then
         echo -e "\033[31m ---- running case $case_num/${#case_list[*]}: gpt-3_dygraph \033"
         cmd=/workspace/PaddleNLP/scripts/distribute/ci_case_dy.sh
         bash $cmd prepare_case gpt_case_list_dygraph $FLAGS_install_deps $FLAGS_download_data
-        execute_func_list $cmdgpt-3_dygraph
+        execute_func_list $cmd gpt-3_dygraph
         export FLAGS_install_deps=1
         export FLAGS_download_data="gpt ""$FLAGS_download_data"
         let case_num++
