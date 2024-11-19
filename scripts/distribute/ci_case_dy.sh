@@ -57,41 +57,75 @@ function track_case_status() {
     return 0
 }
 
-function gpt_case_list_dygraph(){
-    # The test name must have "gpt_" as a prefix, which will 
-    # be used for tracking the execution status of the case.
-    gpt_preprocess_data
-    gpt_345M_single
-    gpt_1.3B_dp
-    gpt_6.7B_stage2_dp2_sharding4
-    gpt_6.7B_stage3_dp2_sharding4
-    gpt_6.7B_stage2_sharding8
-    gpt_175B_DP1_MP4_PP2
-    gpt_175B_DP1_MP4_PP2_sp
-    gpt_175B_DP1_MP8_PP1
-    gpt_175B_DP1_MP8_PP1_sp
-    gpt_175B_DP1_MP1_PP8
-    gpt_generation_345M_single
-    gpt_generation_345M_hybrid
-    gpt_345M_mp8_qat
-    # gpt_export_345M_mp1
-    # gpt_export_345M_mp2
-    # gpt_export_qat_345M
-    # gpt_inference_345M_single
-    # gpt_inference_345M_dp8
-    gpt_345M_single_finetune
-    gpt_eval_WikiText
-    gpt_eval_LAMBADA
+function restore_func() {
+    fun_list=$1
+    cd ${log_path} || { echo "Failed to enter log_path: $log_path"; return 1; } 
+    if [ -e "functions.txt" ]; then
+        rm "functions.txt"
+        echo "Deleted existing functions.txt"
+    fi
+    for function in ${fun_list[@]};do
+        echo "$function" >> functions.txt
+    done
+}
 
-    track_case_status $FUNCNAME "gpt_"
+function gpt_case_list_dygraph() {
+    fun_list=(
+        # The test name must have "gpt_" as a prefix, which will 
+        # be used for tracking the execution status of the case.
+        gpt_preprocess_data
+        gpt_345M_single
+        gpt_1.3B_dp
+        gpt_6.7B_stage2_dp2_sharding4
+        gpt_6.7B_stage3_dp2_sharding4
+        gpt_6.7B_stage2_sharding8
+        gpt_175B_DP1_MP4_PP2
+        gpt_175B_DP1_MP4_PP2_sp
+        gpt_175B_DP1_MP8_PP1
+        gpt_175B_DP1_MP8_PP1_sp
+        gpt_175B_DP1_MP1_PP8
+        gpt_generation_345M_single
+        gpt_generation_345M_hybrid
+        gpt_345M_mp8_qat
+        # gpt_export_345M_mp1
+        # gpt_export_345M_mp2
+        # gpt_export_qat_345M
+        # gpt_inference_345M_single
+        # gpt_inference_345M_dp8
+        gpt_345M_single_finetune
+        gpt_eval_WikiText
+        gpt_eval_LAMBADA
+    )
+    if [ $1 -eq "prepare_case" ]; then
+        restore_func $fun_list  
+    elif [ $1 -eq "exec_case" ]; then
+        for fun in "${fun_list[@]}"; do
+            eval "$fun"
+        done
+        track_case_status $FUNCNAME "gpt_"
+    else 
+        echo -e "\033[31m ---- Invalid status $1 \033[0m"
+        return 1
+    fi
 }
 
 function llm_gpt_case_list_dygraph() {
-    # The test name must have "llm_gpt_" as a prefix, which will 
-    # be used for tracking the execution status of the case.
-    llm_gpt_recompute_bs32_bf16_MP2-SD4-stage1
-
-    track_case_status $FUNCNAME "llm_gpt_"
+    fun_list=(
+        # The test name must have "llm_gpt_" as a prefix, which will 
+        # be used for tracking the execution status of the case.
+        llm_gpt_recompute_bs32_bf16_MP2-SD4-stage1
+    )
+    if [ $1 -eq "prepare_case" ]; then
+        restore_func $fun_list  
+    elif [ $1 -eq "exec_case" ]; then
+        for fun in "${fun_list[@]}"; do
+            eval "$fun"
+        done
+        track_case_status $FUNCNAME "llm_gpt_"
+    else 
+        echo -e "\033[31m ---- Invalid status $1 \033[0m"
+        return 1
+    fi
 }
 
 ############ case start ############
@@ -705,53 +739,6 @@ function before_hook_for_llm_gpt() {
     fi
 }
 
-function restore_func() {
-    fun_list=$1
-    cd ${log_path} || { echo "Failed to enter log_path: $log_path"; return 1; } 
-    if [ -e "functions.txt" ]; then
-        rm "functions.txt"
-        echo "Deleted existing functions.txt"
-    fi
-    for function in ${fun_list[@]};do
-        echo "$function" >> functions.txt
-    done
-}
-
-function restore_gpt_case_list_dygraph_func() {
-    fun_list=(
-        gpt_preprocess_data
-        gpt_345M_single
-        gpt_1.3B_dp
-        gpt_6.7B_stage2_dp2_sharding4
-        gpt_6.7B_stage3_dp2_sharding4
-        gpt_6.7B_stage2_sharding8
-        gpt_175B_DP1_MP4_PP2
-        gpt_175B_DP1_MP4_PP2_sp
-        gpt_175B_DP1_MP8_PP1
-        gpt_175B_DP1_MP8_PP1_sp
-        gpt_175B_DP1_MP1_PP8
-        gpt_generation_345M_single
-        gpt_generation_345M_hybrid
-        gpt_345M_mp8_qat
-        # gpt_export_345M_mp1
-        # gpt_export_345M_mp2
-        # gpt_export_qat_345M
-        # gpt_inference_345M_single
-        # gpt_inference_345M_dp8
-        gpt_345M_single_finetune
-        gpt_eval_WikiText
-        gpt_eval_LAMBADA
-    )
-    restore_func $fun_list  
-}
-
-function restore_llm_gpt_case_list_dygraph_func() {
-    fun_list=(
-        llm_gpt_recompute_bs32_bf16_MP2-SD4-stage1
-    )
-    restore_func $fun_list  
-}
-
 export status=$1
 
 if [[ $status = "prepare_case" ]];then
@@ -759,10 +746,10 @@ if [[ $status = "prepare_case" ]];then
     export FLAGS_download_data=$4
     if [[ $2 = "gpt_case_list_dygraph" ]];then
         before_hook_for_gpt
-        restore_gpt_case_list_dygraph_func
+        gpt_case_list_dygraph prepare_case
     elif [[ $2 = "llm_gpt_case_list_dygraph" ]];then
         before_hook_for_llm_gpt
-        restore_llm_gpt_case_list_dygraph_func
+        llm_gpt_case_list_dygraph prepare_case
     else
         echo -e "\033[31m ---- Invalid exec_case $2 \033[0m"
     fi
@@ -772,7 +759,6 @@ elif [[ $status = "exec_case" ]];then
     $2
 else
     echo -e "\033[31m ---- Start executing $1 \033[0m"
-
     export exec_case=$1
     export FLAGS_install_deps=$2
     export FLAGS_download_data=$3
@@ -787,6 +773,6 @@ else
         echo -e "\033[31m ---- Invalid exec_case $exec_case \033[0m"
     fi
 
-    $1
+    $1 exec_case
 fi
 
