@@ -164,8 +164,6 @@ function llm_qwen_case_list_auto() {
 
 function llama_dygraph_auto_bs8_fp32_DP2() {
     echo "=========== $FUNCNAME run begin ==========="
-    export_env
-    cd ${llama_case_path}
     export PYTHONPATH=$root_path/:$PYTHONPATH
     export FLAGS_call_stack_level=3
     export NVIDIA_TF32_OVERRIDE=0
@@ -236,8 +234,6 @@ function llama_dygraph_auto_bs8_fp32_DP2() {
 
 function llama_dygraph_auto_bs8_fp32_DP2-MP2() {
     echo "=========== $FUNCNAME run begin ==========="
-    export_env
-    cd ${llama_case_path}
     export PYTHONPATH=$root_path/:$PYTHONPATH
     export FLAGS_call_stack_level=3
     export NVIDIA_TF32_OVERRIDE=0
@@ -308,8 +304,6 @@ function llama_dygraph_auto_bs8_fp32_DP2-MP2() {
 
 function llama_dygraph_auto_bs8_fp32_DP2-MP2-PP2() {
     echo "=========== $FUNCNAME run begin ==========="
-    export_env
-    cd ${llama_case_path}
     export PYTHONPATH=$root_path/:$PYTHONPATH
     export FLAGS_call_stack_level=3
     export NVIDIA_TF32_OVERRIDE=0
@@ -380,8 +374,6 @@ function llama_dygraph_auto_bs8_fp32_DP2-MP2-PP2() {
 
 function llama_dygraph_auto_bs8_fp16_DP2-MP2-PP2() {
     echo "=========== $FUNCNAME run begin ==========="
-    export_env
-    cd ${llama_case_path}
     export PYTHONPATH=$root_path/:$PYTHONPATH
     export FLAGS_call_stack_level=3
     export NVIDIA_TF32_OVERRIDE=0
@@ -456,8 +448,6 @@ function llama_dy2st_auto_bs4_bf16_DP1-MP1-PP4-SD2() {
     echo IS_A100 is $IS_A100
     if [ $IS_A100 -ne 0 ]; then
         echo "=========== $FUNCNAME run begin ==========="
-        export_env
-        cd ${llama_case_path}
         export PYTHONPATH=$root_path/:$PYTHONPATH
         export FLAGS_call_stack_level=3
         export NVIDIA_TF32_OVERRIDE=0
@@ -557,8 +547,6 @@ function llama_dy2st_auto_bs4_bf16_DP1-MP1-PP4-SD2-VPP3_split_bw() {
     echo IS_A100 is $IS_A100
     if [ $IS_A100 -ne 0 ]; then
         echo "=========== $FUNCNAME run begin ==========="
-        export_env
-        cd ${llama_case_path}
         export PYTHONPATH=$root_path/:$PYTHONPATH
         export FLAGS_call_stack_level=3
         export NVIDIA_TF32_OVERRIDE=0
@@ -656,8 +644,6 @@ function llama_dy2st_auto_bs4_bf16_DP1-MP1-PP4-SD2-VPP3_split_bw() {
 
 function llama_align_dygraph_dy2st_pir_auto_bs2_bf16_DP2-MP2-PP1-SP() {
     echo "=========== $FUNCNAME run begin ==========="
-    export_env
-    cd ${llama_case_path}
     export PYTHONPATH=$root_path/:$PYTHONPATH
     export PYTHONPATH=/paddle/Paddle/build_gpu/python/:$PYTHONPATH
     export FLAGS_call_stack_level=3
@@ -752,8 +738,6 @@ function llama_align_dygraph_dy2st_pir_auto_bs2_bf16_DP2-MP2-PP1-SP() {
 
 function llama_pir_auto_fuse_ffn_attention_qkv_MP2() {
     echo "=========== $FUNCNAME run begin ==========="
-    export_env
-    cd ${llama_case_path}
     export PYTHONPATH=$root_path/:$PYTHONPATH
     export FLAGS_call_stack_level=3
     export FLAGS_max_inplace_grad_add=100
@@ -850,8 +834,6 @@ function llama_pir_auto_fuse_ffn_attention_qkv_MP2() {
 
 function llama_align_dygraph_dy2st_pir_auto_bs2_bf16_DP2-MP2-PP2-SP() {
     echo "=========== $FUNCNAME run begin ==========="
-    export_env
-    cd ${llama_case_path}
     export PYTHONPATH=$root_path/:$PYTHONPATH
     export PYTHONPATH=/paddle/Paddle/build_gpu/python/:$PYTHONPATH
     export FLAGS_call_stack_level=3
@@ -947,8 +929,6 @@ function llama_align_dygraph_dy2st_pir_auto_bs2_bf16_DP2-MP2-PP2-SP() {
 
 function llama_align_dygraph_dy2st_auto_bs2_bf16_DP2-MP1-PP1() {
     echo "=========== $FUNCNAME run begin ==========="
-    export_env
-    cd ${llama_case_path}
     export PYTHONPATH=$root_path/:$PYTHONPATH
     export FLAGS_call_stack_level=3
     export NVIDIA_TF32_OVERRIDE=0
@@ -1041,8 +1021,6 @@ function llama_align_dygraph_dy2st_auto_bs2_bf16_DP2-MP1-PP1() {
 
 function llama_align_dygraph_dy2st_pir_auto_grad_merge_bs2_fp32_DP1-MP1-PP1() {
     echo "=========== $FUNCNAME run begin ==========="
-    export_env
-    cd ${llama_case_path}
     export PYTHONPATH=$root_path/:$PYTHONPATH
     export FLAGS_call_stack_level=3
     export NVIDIA_TF32_OVERRIDE=0
@@ -1142,8 +1120,6 @@ function llama_align_dygraph_dy2st_pir_auto_grad_merge_bs2_fp32_DP1-MP1-PP1() {
 
 function llama_align_dy2st_fthenb_and_vpp_auto_bs2_fp32_DP1-MP1-PP4() {
     echo "=========== $FUNCNAME run begin ==========="
-    export_env
-    cd ${llama_case_path}
     export PYTHONPATH=$root_path/:$PYTHONPATH
     # Only A100 support this case.
     if [ $IS_A100 -ne 0 ]; then
@@ -1253,8 +1229,6 @@ function llama_align_dy2st_fthenb_and_vpp_auto_bs2_fp32_DP1-MP1-PP4() {
 
 function llama_align_dygraph_dy2st_pir_auto_pp_bs2_bf16_DP1-MP1-PP4() {
     echo "=========== $FUNCNAME run begin ==========="
-    export_env
-    cd ${llama_case_path}
     export PYTHONPATH=$root_path/:$PYTHONPATH
     export FLAGS_call_stack_level=3
     export NVIDIA_TF32_OVERRIDE=0
@@ -1362,8 +1336,6 @@ function llama_align_dygraph_dy2st_pir_auto_pp_bs2_bf16_DP1-MP1-PP4() {
 
 function llama_convert_hybrid_ckpt_to_auto_parallel_bs2_fp32_DP2-MP1-PP1() {
     echo "=========== $FUNCNAME run begin ==========="
-    export_env
-    cd ${llama_case_path}
     export PYTHONPATH=$root_path/:$PYTHONPATH
     export FLAGS_call_stack_level=3
     export NVIDIA_TF32_OVERRIDE=0
@@ -1523,8 +1495,6 @@ function llama_convert_hybrid_ckpt_to_auto_parallel_bs2_fp32_DP2-MP1-PP1() {
 
 function llm_gpt_dygraph_auto_bs8_fp32_DP2() {
     echo "=========== $FUNCNAME run begin ==========="
-    export_env
-    cd ${gpt_case_path}
     export PYTHONPATH=$root_path/:$PYTHONPATH
     export FLAGS_call_stack_level=3
     export NVIDIA_TF32_OVERRIDE=0
@@ -1595,8 +1565,6 @@ function llm_gpt_dygraph_auto_bs8_fp32_DP2() {
 
 function llm_gpt_dygraph_auto_bs8_fp32_DP2-MP2() {
     echo "=========== $FUNCNAME run begin ==========="
-    export_env
-    cd ${gpt_case_path}
     export PYTHONPATH=$root_path/:$PYTHONPATH
     export FLAGS_call_stack_level=3
     export NVIDIA_TF32_OVERRIDE=0
@@ -1669,8 +1637,6 @@ function llm_gpt_dygraph_auto_bs8_fp32_DP2-MP2() {
 
 function llm_gpt_dygraph_auto_bs8_fp32_DP2-MP2-PP2() {
     echo "=========== $FUNCNAME run begin ==========="
-    export_env
-    cd ${gpt_case_path}
     export PYTHONPATH=$root_path/:$PYTHONPATH
     export FLAGS_call_stack_level=3
     export NVIDIA_TF32_OVERRIDE=0
@@ -1744,8 +1710,6 @@ function llm_gpt_dygraph_auto_bs8_fp32_DP2-MP2-PP2() {
 
 function llm_gpt_dygraph_auto_bs8_fp16_DP2-MP2-PP2() {
     echo "=========== $FUNCNAME run begin ==========="
-    export_env
-    cd ${gpt_case_path}
     export PYTHONPATH=$root_path/:$PYTHONPATH
     export FLAGS_call_stack_level=3
     export NVIDIA_TF32_OVERRIDE=0
@@ -1819,8 +1783,6 @@ function llm_gpt_dygraph_auto_bs8_fp16_DP2-MP2-PP2() {
 }
 
 function llm_qwen_dygraph_auto_bs1_fp32_DP2() {
-    export_env
-    cd ${gpt_case_path}
     set -x
 
     config_json="pretrain_argument_for_ci_auto_dp2.json"
@@ -1914,8 +1876,6 @@ EOF
 }
 
 function llm_qwen_dygraph_auto_bs1_fp32_DP2-MP2() {
-    export_env
-    cd ${gpt_case_path}
     set -x
 
     config_json="pretrain_argument_for_ci_auto_dp2_mp2.json"
@@ -2009,8 +1969,6 @@ EOF
 }
 
 function llm_qwen_dygraph_auto_bs1_fp32_DP2-MP2-PP2() {
-    export_env
-    cd ${gpt_case_path}
     set -x
 
     config_json="pretrain_argument_for_ci_auto_dp2_mp2_pp2.json"
@@ -2104,8 +2062,6 @@ EOF
 }
 
 function llm_qwen_dygraph_auto_bs1_bf16_DP2-MP2-PP2() {
-    export_env
-    cd ${gpt_case_path}
     set -x
 
     config_json="pretrain_argument_for_ci_auto_dp2_mp2_pp2.json"
@@ -2372,9 +2328,15 @@ if [[ $status = "prepare_case" ]];then
 elif [[ $status = "exec_case" ]];then
     export FLAGS_install_deps=$3
     export FLAGS_download_data=$4
+    export_env
+    if [[ $2 =~ "gpt" ]];then
+        cd ${gpt_case_path}
+    elif [[ $2 =~ "llama" ]];then
+        cd ${llama_case_path}
+    fi
     $2
 else
-    echo -e "\033[31m ---- Invalid status $status \033[0m"
+    echo -e "\033[31m ---- Start executing  $status \033[0m"
     export exec_case=$1
     export FLAGS_install_deps=$2
     export FLAGS_download_data=$3
