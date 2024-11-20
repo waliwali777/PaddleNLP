@@ -736,7 +736,7 @@ elif [[ $status = "exec_case" ]];then
         cd ${llm_gpt_case_path}
     elif [[ $2 =~ "gpt" ]];then
         cd ${gpt_case_path}
-    else
+    fi
     $2
 else
     echo -e "\033[31m ---- Start executing $1 \033[0m"

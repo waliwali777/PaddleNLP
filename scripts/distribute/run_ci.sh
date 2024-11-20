@@ -174,7 +174,6 @@ function execute_func_list(){
                 let galobal_success_count++
             elif [ $result -eq 2 ]; then
                 echo -e "\033[31m verification failed!"
-                execute_num=1
                 let verification_fail_count++
                 galobal_verification_fail_arr+=("$func_name")
             elif [ $result -eq 250 ]; then
