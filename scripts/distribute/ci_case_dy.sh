@@ -96,9 +96,9 @@ function gpt_case_list_dygraph() {
         gpt_eval_WikiText
         gpt_eval_LAMBADA
     )
-    if [ $1 -eq "prepare_case" ]; then
+    if [ $1 = "prepare_case" ]; then
         restore_func $fun_list  
-    elif [ $1 -eq "exec_case" ]; then
+    elif [ $1 = "exec_case" ]; then
         for fun in "${fun_list[@]}"; do
             eval "$fun"
         done
@@ -115,9 +115,9 @@ function llm_gpt_case_list_dygraph() {
         # be used for tracking the execution status of the case.
         llm_gpt_recompute_bs32_bf16_MP2-SD4-stage1
     )
-    if [ $1 -eq "prepare_case" ]; then
+    if [ $1 = "prepare_case" ]; then
         restore_func $fun_list  
-    elif [ $1 -eq "exec_case" ]; then
+    elif [ $1 = "exec_case" ]; then
         for fun in "${fun_list[@]}"; do
             eval "$fun"
         done

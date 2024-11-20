@@ -102,9 +102,9 @@ function llama_case_list_auto() {
         llama_align_dy2st_fthenb_and_vpp_auto_bs2_fp32_DP1-MP1-PP4
         llama_align_dygraph_dy2st_pir_auto_pp_bs2_bf16_DP1-MP1-PP4
     )
-    if [ $1 -eq "prepare_case" ]; then
+    if [ $1 = "prepare_case" ]; then
         restore_func $fun_list  
-    elif [ $1 -eq "exec_case" ]; then
+    elif [ $1 = "exec_case" ]; then
         for fun in "${fun_list[@]}"; do
             eval "$fun"
         done
@@ -125,9 +125,9 @@ function llm_gpt_case_list_auto() {
         llm_gpt_dygraph_auto_bs8_fp32_DP2-MP2-PP2
         llm_gpt_dygraph_auto_bs8_fp16_DP2-MP2-PP2
     )
-    if [ $1 -eq "prepare_case" ]; then
+    if [ $1 = "prepare_case" ]; then
         restore_func $fun_list  
-    elif [ $1 -eq "exec_case" ]; then
+    elif [ $1 = "exec_case" ]; then
         for fun in "${fun_list[@]}"; do
             eval "$fun"
         done
@@ -147,9 +147,9 @@ function llm_qwen_case_list_auto() {
         llm_qwen_dygraph_auto_bs1_fp32_DP2-MP2-PP2
         llm_qwen_dygraph_auto_bs1_bf16_DP2-MP2-PP2
     )
-    if [ $1 -eq "prepare_case" ]; then
+    if [ $1 = "prepare_case" ]; then
         restore_func $fun_list  
-    elif [ $1 -eq "exec_case" ]; then
+    elif [ $1 = "exec_case" ]; then
         for fun in "${fun_list[@]}"; do
             eval "$fun"
         done
