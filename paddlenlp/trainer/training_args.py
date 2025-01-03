@@ -763,6 +763,7 @@ class TrainingArguments:
             "If a parameter is omitted, it defaults to `xxx:0`."
         },
     )
+    refined_ops_patterns: str = field(default=None, metadata={"help": "The pattern of refined recompute."})
 
     scale_loss: float = field(default=2**15, metadata={"help": "The value of initial scale_loss for fp16."})
 
@@ -1680,9 +1681,12 @@ class TrainingArguments:
                 recompute.enable = True
                 recompute.sr = self.sr if self.sr is not None else 0
                 recompute.refined_ops_patterns = []
-                if self.refined_ops_patterns is not None:
-                    for pattern in self.refined_ops_patterns:
-                        recompute.refined_ops_patterns.append(eval(pattern))
+                if type(self.refined_ops_patterns) == str:
+                    recompute.refined_ops_patterns = json.loads(self.refined_ops_patterns)
+                else:
+                    recompute.refined_ops_patterns = (
+                        self.refined_ops_patterns if self.refined_ops_patterns is not None else []
+                    )
 
             self.strategy = strategy
             if self.hybrid_parallel_topo_order == "pp_first":
@@ -2209,7 +2213,7 @@ class TrainingArguments:
         """
         Serializes this instance to a JSON string.
         """
-        return json.dumps(self.to_dict(), indent=2)
+        return json.dumps(str(self.to_dict()), indent=2)
 
     def to_sanitized_dict(self) -> Dict[str, Any]:
         """
