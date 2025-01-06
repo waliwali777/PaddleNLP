@@ -763,7 +763,6 @@ class TrainingArguments:
             "If a parameter is omitted, it defaults to `xxx:0`."
         },
     )
-    refined_ops_patterns: str = field(default=None, metadata={"help": "The pattern of refined recompute."})
 
     scale_loss: float = field(default=2**15, metadata={"help": "The value of initial scale_loss for fp16."})
 
@@ -1675,18 +1674,6 @@ class TrainingArguments:
                 amp.init_loss_scaling = self.scale_loss
                 amp.custom_black_list = self.amp_custom_black_list if self.amp_custom_black_list is not None else []
                 amp.custom_white_list = self.amp_custom_white_list if self.amp_custom_white_list is not None else []
-
-            if self.recompute:
-                recompute = strategy.recompute
-                recompute.enable = True
-                recompute.sr = self.sr if self.sr is not None else 0
-                recompute.refined_ops_patterns = []
-                if type(self.refined_ops_patterns) == str:
-                    recompute.refined_ops_patterns = json.loads(self.refined_ops_patterns)
-                else:
-                    recompute.refined_ops_patterns = (
-                        self.refined_ops_patterns if self.refined_ops_patterns is not None else []
-                    )
 
             self.strategy = strategy
             if self.hybrid_parallel_topo_order == "pp_first":
